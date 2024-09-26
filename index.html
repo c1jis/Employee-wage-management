@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة أجور الموظفين</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>إدارة أجور الموظفين</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">الصفحة الرئيسية</a></li>
+                <li><a href="employees.html">الموظفين</a></li>
+                <li><a href="salary-report.html">تقارير الرواتب</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>اختيار يوم</h2>
+        <div id="daysContainer"></div>
+    </main>
+
+    <script>
+        // إنشاء أيام الأسبوع
+        const daysContainer = document.getElementById('daysContainer');
+        const daysOfWeek = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+
+        daysOfWeek.forEach((day, index) => {
+            const dayButton = document.createElement('button');
+            dayButton.textContent = day;
+            dayButton.onclick = function() {
+                window.location.href = `employees.html?day=${day}`; // الانتقال إلى صفحة الموظفين مع تمرير اليوم
+            };
+            daysContainer.appendChild(dayButton);
+        });
+    </script>
+</body>
+</html>

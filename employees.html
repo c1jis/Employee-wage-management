@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة أجور الموظفين - الموظفين</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>إدارة أجور الموظفين - الموظفين</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">الصفحة الرئيسية</a></li>
+                <li><a href="employees.html">الموظفين</a></li>
+                <li><a href="salary-report.html">تقارير الرواتب</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>الموظفين ليوم <span id="selectedDay"></span></h2>
+
+        <form id="employeeForm">
+            <label for="name">اسم الموظف:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="attendance">الحضور:</label>
+            <select id="attendance" name="attendance">
+                <option value="✔️">✔️</option>
+                <option value="❌">❌</option>
+            </select>
+
+            <label for="dailySalary">الراتب اليومي:</label>
+            <input type="number" id="dailySalary" name="dailySalary" required>
+
+            <button type="submit">إضافة موظف</button>
+        </form>
+
+        <h2>ملاحظات اليوم</h2>
+        <form id="notesForm">
+            <label for="todayNotes">اكتب ملاحظات اليوم:</label>
+            <input type="text" id="todayNotes" required>
+            <button type="submit">إضافة ملاحظة</button>
+        </form>
+        <ul id="notesList">
+            <!-- سيتم إضافة ملاحظات اليوم هنا -->
+        </ul>
+
+        <h2>جدول الموظفين</h2>
+        <table id="employeeTable">
+            <thead>
+                <tr>
+                    <th>الاسم</th>
+                    <th>الحضور</th>
+                    <th>الراتب اليومي</th>
+                    <th>إجراءات</th>
+                </tr>
+            </tr>
+            <tr>
+                <td>موظف 1</td>
+                <td>50000 دينار</td>
+                <td>2024-09-25</td>
+                <td>
+                    <button class="delete-btn" onclick="deleteEmployee(this)">حذف</button>
+                </td>
+            </tr>
+            <tr>
+                <td>موظف 2</td>
+                <td>60000 دينار</td>
+                <td>2024-09-25</td>
+                <td>
+                    <button class="delete-btn" onclick="deleteEmployee(this)">حذف</button>
+                </td>
+            </tr>
+            <!-- أضف المزيد من الصفوف حسب الحاجة -->
+        </table>
+            </thead>
+            <tbody>
+                <!-- سيتم إضافة الموظفين الجدد هنا -->
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedDay = urlParams.get('day');
+        document.getElementById('selectedDay').textContent = selectedDay;
+
+        const employeeForm = document.getElementById('employeeForm');
+        const employeeTable = document.getElementById('employeeTable').getElementsByTagName('tbody')[0];
+        const notesForm = document.getElementById('notesForm');
+        const notesList = document.getElementById('notesList');
+
+        // تحميل بيانات الموظفين من Local Storage
+        function loadEmployees() {
+            const employees = JSON.parse(localStorage.getItem('employees')) || [];
+            employees.forEach(employee => {
+                addEmployeeToTable(employee);
+            });
+        }
+
+        // تحميل ملاحظات اليوم من Local Storage
+        function loadNotes() {
+            const notes = JSON.parse(localStorage.getItem('todayNotes')) || [];
+            notes.forEach(note => {
+                addNoteToList(note);
+            });
+        }
+
+        // إضافة موظف إلى الجدول
+        function addEmployeeToTable(employee) {
+            const newRow = employeeTable.insertRow();
+            newRow.insertCell(0).textContent = employee.name;
+            newRow.insertCell(1).textContent = employee.attendance;
+            newRow.insertCell(2).textContent = employee.dailySalary;
+
+            const actionsCell = newRow.insertCell(3);
+            const editButton = document.createElement('button');
+            editButton.textContent = 'تعديل';
+            editButton.onclick = function() {
+                editEmployee(newRow);
+            };
+            actionsCell.appendChild(editButton);
+        }
+
+        // إضافة ملاحظة إلى القائمة
+        function addNoteToList(note) {
+            const newListItem = document.createElement('li');
+            newListItem.textContent = note;
+            notesList.appendChild(newListItem);
+        }
+
+        // عند تقديم نموذج الموظف
+        employeeForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // منع إعادة تحميل الصفحة
+
+            const name = document.getElementById('name').value;
+            const attendance = document.getElementById('attendance').value;
+            const dailySalary = parseFloat(document.getElementById('dailySalary').value);
+
+            const employee = { name, attendance, dailySalary };
+
+            // حفظ الموظف في Local Storage
+            const employees = JSON.parse(localStorage.getItem('employees')) || [];
+            employees.push(employee);
+            localStorage.setItem('employees', JSON.stringify(employees));
+
+            addEmployeeToTable(employee);
+            employeeForm.reset();
+        });
+
+        // عند تقديم نموذج الملاحظات
+        notesForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // منع إعادة تحميل الصفحة
+
+            const todayNote = document.getElementById('todayNotes').value;
+
+            // حفظ الملاحظة في Local Storage
+            const notes = JSON.parse(localStorage.getItem('todayNotes')) || [];
+            notes.push(todayNote);
+            localStorage.setItem('todayNotes', JSON.stringify(notes));
+
+            addNoteToList(todayNote);
+            notesForm.reset();
+        });
+
+        // دالة لتعديل معلومات الموظف
+        function editEmployee(row) {
+            const cells = row.cells;
+            document.getElementById('name').value = cells[0].textContent;
+            document.getElementById('attendance').value = cells[1].textContent;
+            document.getElementById('dailySalary').value = cells[2].textContent;
+
+            // إزالة الصف الحالي
+            employeeTable.deleteRow(row.rowIndex - 1);
+
+            // تحديث البيانات في Local Storage
+            updateLocalStorage();
+        }
+
+        // تحديث Local Storage
+        function updateLocalStorage() {
+            const employees = [];
+            for (let i = 0; i < employeeTable.rows.length; i++) {
+                const row = employeeTable.rows[i];
+                const employee = {
+                    name: row.cells[0].textContent,
+                    attendance: row.cells[1].textContent,
+                    dailySalary: parseFloat(row.cells[2].textContent)
+                };
+                employees.push(employee);
+            }
+            localStorage.setItem('employees', JSON.stringify(employees));
+        }
+
+        // تحميل الموظفين والملاحظات عند تحميل الصفحة
+        loadEmployees();
+        loadNotes();
+    </script>
+    <script>
+        function deleteEmployee(button) {
+            // التأكيد قبل الحذف
+            if (confirm("هل أنت متأكد أنك تريد حذف هذا الموظف؟")) {
+                // الحصول على الصف (tr) الذي يحتوي على الزر
+                const row = button.parentNode.parentNode; // العودة إلى العنصر الأب ثم العنصر الأب للصف
+                // حذف الصف من الجدول
+                row.parentNode.removeChild(row);
+                // هنا يمكنك أيضًا إضافة كود لحفظ التغييرات في قاعدة بيانات أو ملف JSON إذا كنت تستخدمها
+            }
+        }
+        </script>
+        
+</body>
+</html>
