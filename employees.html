@@ -13,7 +13,7 @@
             <ul>
                 <li><a href="index.html">الصفحة الرئيسية</a></li>
                 <li><a href="employees.html">الموظفين</a></li>
-                <li><a href="salary-report.html">تقارير الرواتب</a></li>
+                <li><a href="reports.html">تقارير الرواتب</a></li>
             </ul>
         </nav>
     </header>
@@ -56,25 +56,6 @@
                     <th>الراتب اليومي</th>
                     <th>إجراءات</th>
                 </tr>
-            </tr>
-            <tr>
-                <td>موظف 1</td>
-                <td>50000 دينار</td>
-                <td>2024-09-25</td>
-                <td>
-                    <button class="delete-btn" onclick="deleteEmployee(this)">حذف</button>
-                </td>
-            </tr>
-            <tr>
-                <td>موظف 2</td>
-                <td>60000 دينار</td>
-                <td>2024-09-25</td>
-                <td>
-                    <button class="delete-btn" onclick="deleteEmployee(this)">حذف</button>
-                </td>
-            </tr>
-            <!-- أضف المزيد من الصفوف حسب الحاجة -->
-        </table>
             </thead>
             <tbody>
                 <!-- سيتم إضافة الموظفين الجدد هنا -->
@@ -198,18 +179,5 @@
         loadEmployees();
         loadNotes();
     </script>
-    <script>
-        function deleteEmployee(button) {
-            // التأكيد قبل الحذف
-            if (confirm("هل أنت متأكد أنك تريد حذف هذا الموظف؟")) {
-                // الحصول على الصف (tr) الذي يحتوي على الزر
-                const row = button.parentNode.parentNode; // العودة إلى العنصر الأب ثم العنصر الأب للصف
-                // حذف الصف من الجدول
-                row.parentNode.removeChild(row);
-                // هنا يمكنك أيضًا إضافة كود لحفظ التغييرات في قاعدة بيانات أو ملف JSON إذا كنت تستخدمها
-            }
-        }
-        </script>
-        
 </body>
 </html>
