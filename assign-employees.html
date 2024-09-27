@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعيين موظفين لبيت معين</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>تعيين موظفين لبيت: <span id="house-name"></span></h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="index.html">الصفحة الرئيسية</a></li>
+            <li><a href="employees.html">الموظفين</a></li>
+            <li><a href="salary-report.html">تقارير الرواتب</a></li>
+            <li><a href="daily-notes.html">ملاحظات اليوم</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h2>تعيين الموظفين لبيت ليوم: <span id="selected-date"></span></h2>
+        <form id="assign-employee-form">
+            <label for="employee-name">اسم الموظف:</label>
+            <input type="text" id="employee-name" placeholder="أدخل اسم الموظف" required>
+            <label for="daily-salary">الراتب اليومي:</label>
+            <input type="number" id="daily-salary" placeholder="أدخل الراتب اليومي" required>
+            <label for="notes">ملاحظات:</label>
+            <input type="text" id="notes" placeholder="أدخل الملاحظات">
+            <button type="submit">تعيين الموظف</button>
+        </form>
+        <h3>الموظفون المعينون:</h3>
+        <ul id="employees-list"></ul>
+    </main>
+
+    <script>
+        // جلب التاريخ واسم البيت من الرابط
+        const urlParams = new URLSearchParams(window.location.search);
+        const date = urlParams.get('date');
+        const house = urlParams.get('house');
+        document.getElementById('selected-date').textContent = date;
+        document.getElementById('house-name').textContent = house;
+
+        // إضافة موظفين للبيت
+        const assignEmployeeForm = document.getElementById('assign-employee-form');
+        const employeesList = document.getElementById('employees-list');
+
+        // جلب الموظفين من Local Storage عند تحميل الصفحة
+        function loadEmployees() {
+            const employees = JSON.parse(localStorage.getItem(`${date}_${house}`)) || [];
+            console.log("الموظفين المحفوظين:", employees); // تسجيل الموظفين المحفوظين
+            employees.forEach(emp => {
+                const li = document.createElement('li');
+                li.innerHTML = `اسم الموظف: ${emp.name}, الراتب: ${emp.salary}, ملاحظات: ${emp.notes}`;
+                employeesList.appendChild(li);
+            });
+        }
+
+        loadEmployees();
+
+        assignEmployeeForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const employeeName = document.getElementById('employee-name').value;
+            const dailySalary = document.getElementById('daily-salary').value;
+            const notes = document.getElementById('notes').value;
+
+            if (employeeName && dailySalary) {
+                // حفظ الموظف في Local Storage
+                const employees = JSON.parse(localStorage.getItem(`${date}_${house}`)) || [];
+                employees.push({ name: employeeName, salary: dailySalary, notes: notes });
+                localStorage.setItem(`${date}_${house}`, JSON.stringify(employees));
+
+                const li = document.createElement('li');
+                li.innerHTML = `اسم الموظف: ${employeeName}, الراتب: ${dailySalary}, ملاحظات: ${notes}`;
+                employeesList.appendChild(li);
+                document.getElementById('assign-employee-form').reset(); // تفريغ الحقول بعد الإضافة
+                
+                console.log("تم إضافة الموظف:", { name: employeeName, salary: dailySalary, notes: notes }); // تسجيل الموظف المضاف
+            }
+        });
+    </script>
+</body>
+</html>
