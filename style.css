@@ -1,98 +1,101 @@
-/* تصميم أساسي للموقع */
-body {
-    font-family: Arial, sans-serif;
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
     background-color: #f4f4f4;
 }
 
 header {
     background-color: #4CAF50;
-    color: #fff;
-    padding: 10px 0;
+    color: white;
     text-align: center;
-}
-
-header h1 {
-    margin: 0;
+    padding: 1em 0;
 }
 
 nav ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    justify-content: center;
+    list-style-type: none;
 }
 
 nav ul li {
-    margin: 0 15px;
+    display: inline;
+    margin: 0 10px;
 }
 
 nav ul li a {
-    color: #fff;
+    color: white;
     text-decoration: none;
-    font-weight: bold;
 }
 
 main {
+    margin: 20px;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.calendar h2 {
+    margin-bottom: 20px;
+}
+
+.days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-gap: 10px;
+}
+
+.day {
+    background-color: #4CAF50;
+    color: white;
     padding: 20px;
     text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.day a {
+    color: white;
+    text-decoration: none;
+}
+
+.day:hover {
+    background-color: #45a049;
 }
 
 form {
-    margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 form label {
     margin-right: 10px;
 }
 
-form input, form select, form button {
+form input, button {
+    padding: 5px;
     margin: 5px;
-    padding: 8px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-}
-
-table, th, td {
-    border: 1px solid #333;
-}
-
-th, td {
-    padding: 10px;
-    text-align: center;
-}
-
-th {
-    background-color: #45a049;
-    color: #fff;
 }
 
 button {
-    padding: 5px 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.delete-btn {
-    padding: 5px 10px;
-    background-color: #f44336; /* لون خلفية الزر */
+    background-color: #4CAF50;
     color: white;
     border: none;
     cursor: pointer;
-}
-
-.delete-btn:hover {
-    background-color: #d32f2f; /* لون عند التمرير */
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #45a049;
+}
+
+ul {
+    list-style-type: none;
+}
+
+ul li {
+    margin: 5px 0;
+    padding: 5px;
+    background-color: #ddd;
+    border-radius: 5px;
 }
