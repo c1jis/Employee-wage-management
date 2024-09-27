@@ -10,26 +10,81 @@
     <header>
         <h1>تقارير الرواتب</h1>
     </header>
+    <nav>
+        <ul>
+            <li><a href="index.html">الصفحة الرئيسية</a></li>
+            <li><a href="employees.html">الموظفين</a></li>
+            <li><a href="salary-report.html">تقارير الرواتب</a></li>
+            <li><a href="daily-notes.html">ملاحظات اليوم</a></li>
+        </ul>
+    </nav>
     <main>
-        <h2>تقارير الرواتب للموظفين</h2>
-        <table>
-            <tr>
-                <th>اسم الموظف</th>
-                <th>الراتب اليومي</th>
-                <th>تاريخ</th>
-            </tr>
-            <tr>
-                <td>موظف 1</td>
-                <td>50000 دينار</td>
-                <td>2024-09-25</td>
-            </tr>
-            <tr>
-                <td>موظف 2</td>
-                <td>60000 دينار</td>
-                <td>2024-09-25</td>
-            </tr>
-            <!-- أضف المزيد من الصفوف حسب الحاجة -->
+        <h2>تقرير الرواتب الإجمالي</h2>
+        <table id="salaryTable">
+            <thead>
+                <tr>
+                    <th>اسم الموظف</th>
+                    <th>الراتب اليومي</th>
+                    <th>مجموع الأيام</th>
+                    <th>المجموع الكلي</th>
+                    <th>البيوت التي عمل فيها</th> <!-- عمود جديد للبيوت -->
+                </tr>
+            </thead>
+            <tbody id="salaryTableBody">
+                <!-- سيتم إدخال بيانات الرواتب هنا -->
+            </tbody>
         </table>
     </main>
+
+    <script>
+        function loadAllEmployees() {
+            let allEmployees = {};
+            // استعراض جميع مفاتيح localStorage لجمع بيانات الموظفين
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.includes('_')) { // التحقق من مفاتيح تمثل بيانات موظفين (اليوم والبيت)
+                    const house = key.split('_')[1]; // استخراج اسم البيت من المفتاح
+                    const employees = JSON.parse(localStorage.getItem(key)) || [];
+                    
+                    employees.forEach(emp => {
+                        if (!allEmployees[emp.name]) {
+                            allEmployees[emp.name] = { 
+                                name: emp.name, 
+                                salary: emp.salary, 
+                                days: 1, 
+                                totalSalary: emp.salary, 
+                                houses: new Set([house]) // استخدام Set لتجنب التكرار
+                            };
+                        } else {
+                            allEmployees[emp.name].days += 1;
+                            allEmployees[emp.name].totalSalary = allEmployees[emp.name].days * emp.salary;
+                            allEmployees[emp.name].houses.add(house); // إضافة البيت إلى السجل
+                        }
+                    });
+                }
+            }
+            return allEmployees;
+        }
+
+        function renderSalaryReport() {
+            const salaryTableBody = document.getElementById('salaryTableBody');
+            const employees = loadAllEmployees();
+            for (const employeeName in employees) {
+                const emp = employees[employeeName];
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${emp.name}</td>
+                    <td>${emp.salary}</td>
+                    <td>${emp.days}</td>
+                    <td>${emp.totalSalary}</td>
+                    <td>${[...emp.houses].join(', ')}</td> <!-- عرض البيوت التي عمل فيها -->
+                `;
+                salaryTableBody.appendChild(row);
+            }
+        }
+
+        // تحميل التقرير عند فتح الصفحة
+        renderSalaryReport();
+    </script>
 </body>
 </html>
