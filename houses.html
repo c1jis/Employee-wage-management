@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة بيوت للموظفين</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>إضافة بيوت ليوم معين</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="index.html">الصفحة الرئيسية</a></li>
+            <li><a href="employees.html">الموظفين</a></li>
+            <li><a href="salary-report.html">تقارير الرواتب</a></li>
+            <li><a href="daily-notes.html">ملاحظات اليوم</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h2>إضافة بيوت ليوم: <span id="selected-date"></span></h2>
+        <form id="add-house-form">
+            <label for="house-name">اسم البيت:</label>
+            <input type="text" id="house-name" placeholder="أدخل اسم البيت" required>
+            <button type="submit">إضافة البيت</button>
+        </form>
+        <h3>البيوت المضافة:</h3>
+        <ul id="houses-list"></ul>
+    </main>
+
+    <script>
+        // جلب التاريخ من الرابط
+        const urlParams = new URLSearchParams(window.location.search);
+        const date = urlParams.get('date');
+        document.getElementById('selected-date').textContent = date;
+
+        // إضافة بيوت للموظفين
+        const addHouseForm = document.getElementById('add-house-form');
+        const housesList = document.getElementById('houses-list');
+
+        // جلب البيوت من Local Storage عند تحميل الصفحة
+        function loadHouses() {
+            const houses = JSON.parse(localStorage.getItem(date)) || [];
+            console.log("البيوت المحفوظة:", houses); // تسجيل البيوت المحفوظة
+            houses.forEach(house => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="assign-employees.html?date=${date}&house=${house}">${house}</a>`;
+                housesList.appendChild(li);
+            });
+        }
+
+        loadHouses();
+
+        addHouseForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const houseName = document.getElementById('house-name').value;
+
+            if (houseName) {
+                // حفظ البيت في Local Storage
+                const houses = JSON.parse(localStorage.getItem(date)) || [];
+                houses.push(houseName);
+                localStorage.setItem(date, JSON.stringify(houses));
+
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="assign-employees.html?date=${date}&house=${houseName}">${houseName}</a>`;
+                housesList.appendChild(li);
+                document.getElementById('house-name').value = ''; // تفريغ الحقل بعد الإضافة
+
+                console.log("تم إضافة البيت:", houseName); // تسجيل البيت المضاف
+            }
+        });
+    </script>
+</body>
+</html>

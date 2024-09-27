@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قسم المجموعات</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>إدارة المجموعات</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="index.html">الصفحة الرئيسية</a></li>
+            <li><a href="employees.html">الموظفين</a></li>
+            <li><a href="salary-report.html">تقارير الرواتب</a></li>
+            <li><a href="daily-notes.html">ملاحظات اليوم</a></li>
+            <li><a href="groups.html">المجموعات</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h2>المجموعات الموجودة</h2>
+        <div>
+            <button id="add-group-button">إضافة مجموعة جديدة</button>
+            <input type="text" id="search-group" placeholder="بحث عن مجموعة...">
+        </div>
+        <table id="groupsTable">
+            <thead>
+                <tr>
+                    <th>اسم المجموعة</th>
+                    <th>تاريخ الإنشاء</th>
+                    <th>عدد الموظفين</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="groupsTableBody">
+                <!-- سيتم إدخال بيانات المجموعات هنا -->
+            </tbody>
+        </table>
+
+        <h2>إضافة مجموعة جديدة</h2>
+        <form id="add-group-form">
+            <label for="group-name">اسم المجموعة:</label>
+            <input type="text" id="group-name" required>
+            <button type="submit">إنشاء مجموعة</button>
+        </form>
+    </main>
+
+    <script>
+        function loadGroups() {
+            const groupsTableBody = document.getElementById('groupsTableBody');
+            groupsTableBody.innerHTML = ''; // تفريغ الجدول
+
+            const groups = JSON.parse(localStorage.getItem('groups')) || [];
+            groups.forEach(group => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${group.name}</td>
+                    <td>${group.date}</td>
+                    <td>${group.employees.length}</td>
+                    <td>
+                        <button onclick="deleteGroup('${group.name}')">حذف</button>
+                        <button onclick="viewGroupDetails('${group.name}')">عرض التفاصيل</button>
+                    </td>
+                `;
+                groupsTableBody.appendChild(row);
+            });
+        }
+
+        document.getElementById('add-group-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const groupName = document.getElementById('group-name').value;
+            const date = new Date().toLocaleDateString();
+            const groups = JSON.parse(localStorage.getItem('groups')) || [];
+
+            groups.push({ name: groupName, date: date, employees: [] });
+            localStorage.setItem('groups', JSON.stringify(groups));
+            loadGroups();
+            document.getElementById('add-group-form').reset(); // تفريغ الحقول
+        });
+
+        function deleteGroup(groupName) {
+            const groups = JSON.parse(localStorage.getItem('groups')) || [];
+            const updatedGroups = groups.filter(group => group.name !== groupName);
+            localStorage.setItem('groups', JSON.stringify(updatedGroups));
+            loadGroups();
+        }
+
+        function viewGroupDetails(groupName) {
+            const groups = JSON.parse(localStorage.getItem('groups')) || [];
+            const group = groups.find(g => g.name === groupName);
+            const detailsContainer = document.createElement('div');
+            detailsContainer.style.position = 'fixed';
+            detailsContainer.style.top = '50%';
+            detailsContainer.style.left = '50%';
+            detailsContainer.style.transform = 'translate(-50%, -50%)';
+            detailsContainer.style.backgroundColor = '#fff';
+            detailsContainer.style.border = '1px solid #000';
+            detailsContainer.style.padding = '20px';
+            detailsContainer.style.zIndex = '1000';
+
+            if (group) {
+                const employeeRows = group.employees.map(emp => {
+                    const totalSalary = emp.salary * emp.daysWorked; // حساب المجموع الكلي
+                    return `
+                        <tr>
+                            <td>${emp.name}</td>
+                            <td>${emp.salary}</td>
+                            <td>${emp.daysWorked}</td>
+                            <td>${totalSalary}</td>
+                            <td><button onclick="editEmployee('${group.name}', '${emp.name}')">تعديل</button></td>
+                        </tr>
+                    `;
+                }).join('');
+
+                detailsContainer.innerHTML = `
+                    <h3>تفاصيل المجموعة: ${groupName}</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>اسم الموظف</th>
+                                <th>الراتب اليومي</th>
+                                <th>مجموع الأيام</th>
+                                <th>المجموع الكلي</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${employeeRows || '<tr><td colspan="5">لا يوجد موظفين في هذه المجموعة.</td></tr>'}
+                        </tbody>
+                    </table>
+                    <button onclick="closeDetails()">إغلاق</button>
+                `;
+            } else {
+                detailsContainer.innerHTML = `
+                    <h3>خطأ</h3>
+                    <p>لا توجد مجموعة بهذا الاسم.</p>
+                    <button onclick="closeDetails()">إغلاق</button>
+                `;
+            }
+
+            document.body.appendChild(detailsContainer);
+        }
+
+        function closeDetails() {
+            const detailsContainer = document.querySelector('body > div');
+            if (detailsContainer) {
+                document.body.removeChild(detailsContainer);
+            }
+        }
+
+        document.getElementById('search-group').addEventListener('input', function () {
+            const searchValue = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#groupsTableBody tr');
+            rows.forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                const groupName = cells[0].textContent.toLowerCase();
+                if (groupName.includes(searchValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // تحميل المجموعات عند فتح الصفحة
+        loadGroups();
+    </script>
+</body>
+</html>
