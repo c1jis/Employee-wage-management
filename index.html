@@ -3,39 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة أجور الموظفين</title>
+    <title>إدارة الموظفين - تقويم الشهر</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>إدارة أجور الموظفين</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">الصفحة الرئيسية</a></li>
-                <li><a href="employees.html">الموظفين</a></li>
-                <li><a href="salary-report.html">تقارير الرواتب</a></li>
-            </ul>
-        </nav>
+        <h1>تقويم الشهر</h1>
     </header>
-
+    <nav>
+        <ul>
+            <li><a href="index.html">الصفحة الرئيسية</a></li>
+            <li><a href="employees.html">الموظفين</a></li>
+            <li><a href="salary-report.html">تقارير الرواتب</a></li>
+            <li><a href="daily-notes.html">ملاحظات اليوم</a></li>
+        </ul>
+    </nav>
     <main>
-        <h2>اختيار يوم</h2>
-        <div id="daysContainer"></div>
+        <div class="calendar">
+            <h2>أيام الشهر</h2>
+            <div class="days-grid">
+                <!-- عرض أيام الشهر مع أسماء الأيام -->
+                <script>
+                    const daysGrid = document.querySelector('.days-grid');
+                    const currentMonth = new Date().getMonth(); // الشهر الحالي
+                    const currentYear = new Date().getFullYear(); // السنة الحالية
+
+                    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // عدد الأيام في الشهر
+
+                    const weekdays = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const date = new Date(currentYear, currentMonth, day);
+                        const dayOfWeek = weekdays[date.getDay()];
+                        
+                        const dayElement = document.createElement('div');
+                        dayElement.classList.add('day');
+                        dayElement.innerHTML = `<a href="houses.html?date=${currentYear}-${currentMonth + 1}-${day}">يوم ${day} - ${dayOfWeek} <br> ${currentYear}-${currentMonth + 1}-${day}</a>`;
+                        daysGrid.appendChild(dayElement);
+                    }
+                </script>
+            </div>
+        </div>
     </main>
 
     <script>
-        // إنشاء أيام الأسبوع
-        const daysContainer = document.getElementById('daysContainer');
-        const daysOfWeek = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+        // استرجاع التاريخ من الرابط عند الدخول إلى صفحة البيوت
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedDate = urlParams.get('date');
 
-        daysOfWeek.forEach((day, index) => {
-            const dayButton = document.createElement('button');
-            dayButton.textContent = day;
-            dayButton.onclick = function() {
-                window.location.href = `employees.html?day=${day}`; // الانتقال إلى صفحة الموظفين مع تمرير اليوم
-            };
-            daysContainer.appendChild(dayButton);
-        });
+        if (selectedDate) {
+            // هنا يمكنك تنفيذ أي شيء ترغب في القيام به عند فتح صفحة البيوت بتواريخ محددة
+            console.log(`تم تحديد التاريخ: ${selectedDate}`);
+            // على سبيل المثال، يمكنك عرض المعلومات ذات الصلة بالتاريخ المحدد
+            // أو استرجاع الموظفين أو البيوت الخاصة بذلك اليوم
+        }
     </script>
 </body>
 </html>
